@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS OS V9.0</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      background: #000; 
+      color: #fff; 
+      width: 100vw; 
+      height: 100vh; 
+      overflow: hidden;
+    }
+    
+    /* Boot Screen */
+    #boot { 
+      position: fixed; 
+      inset: 0; 
+      background: #000; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 100;
+    }
+    #boot .logo { font-size: 48px; font-weight: 900; margin-bottom: 20px; }
+    #boot .logo span { color: #00f0ff; }
+    #boot .bar { width: 200px; height: 3px; background: #111; border-radius: 3px; overflow: hidden; }
+    #boot .fill { height: 100%; background: linear-gradient(90deg, #00f0ff, #8b00ff); animation: load 1s ease forwards; }
+    #boot .text { margin-top: 15px; color: #666; font-size: 12px; }
+    @keyframes load { from { width: 0; } to { width: 100%; } }
+    
+    /* Login */
+    #login { 
+      position: fixed; 
+      inset: 0; 
+      background: linear-gradient(135deg, #000 0%, #0a0a2a 100%); 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 90;
+    }
+    #login.show { display: flex; }
+    #login .modal { 
+      background: rgba(10, 10, 30, 0.95); 
+      border: 1px solid #00f0ff33; 
+      border-radius: 16px; 
+      padding: 40px; 
+      width: 380px; 
+    }
+    #login .logo { font-size: 28px; font-weight: 900; text-align: center; margin-bottom: 30px; }
+    #login .logo span { color: #00f0ff; }
+    #login input { 
+      width: 100%; 
+      padding: 14px; 
+      background: #0a0a1a; 
+      border: 1px solid #00f0ff33; 
+      border-radius: 8px; 
+      color: #fff; 
+      font-size: 15px; 
+      margin-bottom: 15px; 
+      outline: none;
+    }
+    #login input:focus { border-color: #00f0ff; }
+    #login button { 
+      width: 100%; 
+      padding: 14px; 
+      background: #00f0ff; 
+      border: none; 
+      border-radius: 8px; 
+      color: #000; 
+      font-size: 14px; 
+      font-weight: 700; 
+      cursor: pointer; 
+      margin-top: 5px;
+    }
+    #login button:hover { filter: brightness(1.1); }
+    #login .divider { text-align: center; color: #666; margin: 20px 0; font-size: 12px; }
+    #login .guest { background: transparent; border: 1px solid #00f0ff33; color: #fff; }
+    #login .hint { text-align: center; color: #555; font-size: 11px; margin-top: 20px; }
+    
+    /* Desktop */
+    #desktop { 
+      position: fixed; 
+      inset: 0; 
+      background: linear-gradient(135deg, #000 0%, #0a0a2a 50%, #000 100%); 
+      display: none;
+    }
+    #desktop.show { display: block; }
+    
+    /* Canvas */
+    #bg-canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.5; }
+    
+    /* Grid overlay */
+    .grid { 
+      position: absolute; 
+      inset: 0; 
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 1;
+    }
+    
+    /* Icons */
+    .icons { 
+      position: absolute; 
+      top: 20px; 
+      left: 20px; 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 10px; 
+      z-index: 10;
+    }
+    .icon { 
+      width: 80px; 
+      padding: 12px; 
+      text-align: center; 
+      border-radius: 10px; 
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .icon:hover { background: rgba(0, 240, 255, 0.1); border-color: #00f0ff44; }
+    .icon .emoji { font-size: 32px; }
+    .icon .label { font-size: 10px; color: #fff; margin-top: 5px; font-family: monospace; }
+    
+    /* User Menu */
+    .user-menu { position: absolute; top: 20px; right: 20px; z-index: 100; }
+    .user-btn { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      padding: 8px 15px; 
+      background: rgba(10, 10, 30, 0.9); 
+      border: 1px solid #00f0ff33; 
+      border-radius: 25px; 
+      cursor: pointer;
+    }
+    .user-btn:hover { border-color: #00f0ff; }
+    .avatar { 
+      width: 28px; 
+      height: 28px; 
+      background: #00f0ff; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 700; 
+      color: #000;
+    }
+    .user-name { font-size: 12px; font-weight: 600; }
+    .user-role { font-size: 10px; color: #666; }
+    
+    /* Dropdown */
+    .dropdown { 
+      position: absolute; 
+      top: 100%; 
+      right: 0; 
+      margin-top: 10px; 
+      background: rgba(10, 10, 30, 0.95); 
+      border: 1px solid #00f0ff33; 
+      border-radius: 10px; 
+      width: 180px; 
+      display: none;
+    }
+    .dropdown.show { display: block; }
+    .dropdown-item { padding: 12px 15px; cursor: pointer; font-size: 13px; }
+    .dropdown-item:hover { background: rgba(0, 240, 255, 0.1); }
+    .dropdown-item.logout { border-top: 1px solid #ffffff11; color: #ff0055; }
+    
+    /* Clock */
+    .clock { position: absolute; top: 70px; right: 20px; text-align: right; z-index: 10; }
+    .clock .time { font-family: monospace; font-size: 32px; font-weight: 700; }
+    .clock .date { font-family: monospace; font-size: 11px; color: #666; margin-top: 5px; }
+    
+    /* Taskbar */
+    .taskbar { 
+      position: absolute; 
+      bottom: 10px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      display: flex; 
+      gap: 5px; 
+      padding: 8px 15px; 
+      background: rgba(10, 10, 30, 0.9); 
+      border: 1px solid #00f0ff33; 
+      border-radius: 16px; 
+      z-index: 100;
+    }
+    .taskbar-item { 
+      width: 42px; 
+      height: 42px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 20px; 
+      border-radius: 10px; 
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .taskbar-item:hover { background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; }
+    .divider { width: 1px; height: 30px; background: #ffffff22; margin: 0 5px; }
+    .tray { display: flex; align-items: center; gap: 10px; margin-left: 10px; font-family: monospace; font-size: 11px; color: #888; }
+    .tray .val { color: #00f0ff; }
+    
+    /* Window */
+    .window { 
+      position: absolute; 
+      background: rgba(10, 10, 30, 0.95); 
+      border: 1px solid #00f0ff44; 
+      border-radius: 12px; 
+      min-width: 400px; 
+      min-height: 300px; 
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .window-header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 10px 15px; 
+      background: #00f0ff08; 
+      border-bottom: 1px solid #ffffff11;
+      cursor: move;
+    }
+    .window-title { font-family: monospace; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+    .window-controls { display: flex; gap: 8px; }
+    .win-btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; }
+    .win-btn.close { background: #ff0055; }
+    .win-btn.min { background: #ffcc00; }
+    .win-btn.max { background: #00ff88; }
+    .window-body { height: calc(100% - 42px); overflow: auto; }
+    
+    /* Content styles */
+    .content { padding: 15px; }
+    .content h3 { color: #00f0ff; margin-bottom: 15px; }
+    .content p { color: #aaa; line-height: 1.6; }
+    .content input { 
+      width: 100%; 
+      padding: 10px; 
+      background: #0a0a1a; 
+      border: 1px solid #00f0ff33; 
+      border-radius: 6px; 
+      color: #fff; 
+      margin-bottom: 10px;
+    }
+    .content button { 
+      padding: 10px 20px; 
+      background: #00f0ff; 
+      border: none; 
+      border-radius: 6px; 
+      color: #000; 
+      font-weight: 600; 
+      cursor: pointer;
+    }
+    
+    /* Notification */
+    #notif {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(10, 10, 30, 0.95);
+      border: 1px solid #00f0ff44;
+      border-radius: 10px;
+      padding: 15px 25px;
+      z-index: 200;
+      transition: transform 0.3s;
+    }
+    #notif.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- Boot Screen -->
+<div id="boot">
+  <div class="logo">NEXUS<span>.</span>OS</div>
+  <div class="bar"><div class="fill"></div></div>
+  <div class="text">Initializing...</div>
+</div>
+
+<!-- Login Screen -->
+<div id="login">
+  <div class="modal">
+    <div class="logo">NEXUS<span>.</span>OS</div>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="doLogin()">Access System</button>
+    <div class="divider">— or —</div>
+    <button class="guest" onclick="doGuest()">Guest Access</button>
+    <div class="hint">Demo: admin / admin123</div>
+  </div>
+</div>
+
+<!-- Desktop -->
+<div id="desktop">
+  <canvas id="bg-canvas"></canvas>
+  <div class="grid"></div>
+  
+  <!-- Icons -->
+  <div class="icons" id="icons"></div>
+  
+  <!-- User Menu -->
+  <div class="user-menu">
+    <div class="user-btn" onclick="toggleDrop()">
+      <div class="avatar" id="av">A</div>
+      <div>
+        <div class="user-name" id="uname">Admin</div>
+        <div class="user-role" id="urole">admin</div>
+      </div>
+    </div>
+    <div class="dropdown" id="drop">
+      <div class="dropdown-item" onclick="openWin('settings')">⚙️ Settings</div>
+      <div class="dropdown-item logout" onclick="doLogout()">🚪 Logout</div>
+    </div>
+  </div>
+  
+  <!-- Clock -->
+  <div class="clock">
+    <div class="time" id="time">00:00</div>
+    <div class="date" id="date">Loading...</div>
+  </div>
+  
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <div class="taskbar-item" onclick="openWin('ai')">💬</div>
+    <div class="taskbar-item" onclick="openWin('term')">⌨️</div>
+    <div class="taskbar-item" onclick="openWin('mon')">📊</div>
+    <div class="taskbar-item" onclick="openWin('radio')">📻</div>
+    <div class="taskbar-item" onclick="openWin('neural')">🧠</div>
+    <div class="divider"></div>
+    <div class="tray"><span class="val" id="cpu">23</span>% CPU</div>
+  </div>
+  
+  <!-- Windows Container -->
+  <div id="windows"></div>
+</div>
+
+<!-- Notification -->
+<div id="notif"></div>
+
+<script>
+// === STATE ===
+let currentUser = null;
+let winZ = 100;
+let winCount = 0;
+let cpuVal = 23;
+
+// === ELEMENTS ===
+const $ = id => document.getElementById(id);
+
+// === ICONS DATA ===
+const APPS = [
+  { id: 'ai', icon: '💬', label: 'AI Chat' },
+  { id: 'term', icon: '⌨️', label: 'Terminal' },
+  { id: 'mon', icon: '📊', label: 'Monitor' },
+  { id: 'radio', icon: '📻', label: 'Radio' },
+  { id: 'neural', icon: '🧠', label: 'Neural' },
+  { id: 'settings', icon: '⚙️', label: 'Settings' }
+];
+
+// === BOOT SEQUENCE ===
+setTimeout(() => {
+  $('boot').style.display = 'none';
+  $('login').classList.add('show');
+}, 1500);
+
+// === LOGIN ===
+function doLogin() {
+  const u = $('username').value.toLowerCase().trim();
+  const p = $('password').value.trim();
+  
+  if ((u === 'admin' && p === 'admin123') || (u === 'nexus' && p === 'nexus123') || p === 'demo') {
+    currentUser = { name: u, role: u === 'admin' ? 'admin' : 'user' };
+    showDesktop();
+  } else {
+    notify('Invalid credentials. Try: admin / admin123');
+  }
+}
+
+function doGuest() {
+  currentUser = { name: 'guest', role: 'guest' };
+  showDesktop();
+}
+
+function showDesktop() {
+  $('login').classList.remove('show');
+  $('desktop').classList.add('show');
+  $('av').textContent = currentUser.name[0].toUpperCase();
+  $('uname').textContent = currentUser.name;
+  $('urole').textContent = currentUser.role;
+  renderIcons();
+  startClock();
+  startCanvas();
+  startStats();
+  notify('Welcome, ' + currentUser.name + '!');
+}
+
+function doLogout() {
+  $('desktop').classList.remove('show');
+  $('login').classList.add('show');
+  $('drop').classList.remove('show');
+  $('windows').innerHTML = '';
+  currentUser = null;
+}
+
+// === TOGGLE DROPDOWN ===
+function toggleDrop() {
+  $('drop').classList.toggle('show');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.user-menu')) {
+    $('drop')?.classList.remove('show');
+  }
+});
+
+// === RENDER ICONS ===
+function renderIcons() {
+  const icons = $('icons');
+  icons.innerHTML = '';
+  APPS.forEach(app => {
+    const div = document.createElement('div');
+    div.className = 'icon';
+    div.innerHTML = `<div class="emoji">${app.icon}</div><div class="label">${app.label}</div>`;
+    div.ondblclick = () => openWin(app.id);
+    icons.appendChild(div);
+  });
+}
+
+// === CLOCK ===
+function startClock() {
+  function update() {
+    const now = new Date();
+    $('time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    $('date').textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+// === STATS ===
+function startStats() {
+  setInterval(() => {
+    cpuVal = Math.max(5, Math.min(95, cpuVal + (Math.random() - 0.5) * 10));
+    $('cpu').textContent = Math.round(cpuVal);
+  }, 2000);
+}
+
+// === CANVAS BACKGROUND ===
+function startCanvas() {
+  const canvas = $('bg-canvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const nodes = [];
+  for (let i = 0; i < 40; i++) {
+    nodes.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2 + 1
+    });
+  }
+  
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 10, 0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    nodes.forEach((n, i) => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+      if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+      
+      nodes.slice(i + 1).forEach(o => {
+        const d = Math.hypot(o.x - n.x, o.y - n.y);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(o.x, o.y);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${(1 - d/100) * 0.25})`;
+          ctx.stroke();
+        }
+      });
+      
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+      ctx.fill();
+    });
+    
+    requestAnimationFrame(draw);
+  }
+  draw();
+  
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+}
+
+// === WINDOWS ===
+function openWin(id) {
+  winZ++;
+  winCount++;
+  const wins = $('windows');
+  
+  const configs = {
+    ai: { title: 'AI Chat', w: 500, h: 400 },
+    term: { title: 'Terminal', w: 600, h: 350 },
+    mon: { title: 'Monitor', w: 400, h: 300 },
+    radio: { title: 'Radio', w: 400, h: 350 },
+    neural: { title: 'Neural Core', w: 300, h: 300 },
+    settings: { title: 'Settings', w: 400, h: 350 }
+  };
+  
+  const cfg = configs[id] || { title: id, w: 400, h: 300 };
+  const x = 100 + (winCount % 5) * 30;
+  const y = 80 + (winCount % 5) * 30;
+  
+  const win = document.createElement('div');
+  win.className = 'window';
+  win.style.cssText = `left:${x}px;top:${y}px;width:${cfg.w}px;height:${cfg.h}px;z-index:${winZ}`;
+  win.innerHTML = `
+    <div class="window-header">
+      <div class="window-title">${cfg.title}</div>
+      <div class="window-controls">
+        <button class="win-btn min" onclick="this.closest('.window').style.display='none'"></button>
+        <button class="win-btn close" onclick="this.closest('.window').remove()"></button>
+      </div>
+    </div>
+    <div class="window-body">${getContent(id)}</div>
+  `;
+  
+  win.onmousedown = () => { winZ++; win.style.zIndex = winZ; };
+  
+  // Simple drag
+  let dragging = false, dx, dy;
+  win.querySelector('.window-header').onmousedown = e => {
+    dragging = true;
+    dx = e.clientX - win.offsetLeft;
+    dy = e.clientY - win.offsetTop;
+  };
+  document.addEventListener('mousemove', e => {
+    if (dragging) {
+      win.style.left = (e.clientX - dx) + 'px';
+      win.style.top = (e.clientY - dy) + 'px';
+    }
+  });
+  document.addEventListener('mouseup', () => dragging = false);
+  
+  wins.appendChild(win);
+}
+
+function getContent(id) {
+  if (id === 'ai') {
+    return `
+      <div class="content">
+        <h3>NEXUS AI</h3>
+        <p>Configure your API key in Settings to enable AI chat.</p>
+        <input type="text" placeholder="Type a message..." id="aiInput">
+        <button onclick="alert('Configure API key in Settings first!')">Send</button>
+      </div>
+    `;
+  }
+  if (id === 'term') {
+    return `
+      <div class="content" style="font-family:monospace;background:#000;height:100%;">
+        <div style="color:#00f0ff">NEXUS Terminal v3.0</div>
+        <div style="color:#888">Type 'help' for commands</div>
+        <div style="margin-top:10px">
+          <span style="color:#00f0ff">nexus@core:~$</span>
+          <input type="text" style="background:transparent;border:none;color:#fff;outline:none;width:70%" id="termInput" onkeydown="if(event.key==='Enter'){termCmd(this.value);this.value='';}">
+        </div>
+        <div id="termOut"></div>
+      </div>
+    `;
+  }
+  if (id === 'mon') {
+    return `
+      <div class="content">
+        <h3>System Monitor</h3>
+        <p>CPU: <span id="monCpu">${Math.round(cpuVal)}%</span></p>
+        <div style="background:#111;height:8px;border-radius:4px;margin:10px 0">
+          <div id="monBar" style="background:linear-gradient(90deg,#00f0ff,#8b00ff);height:100%;border-radius:4px;width:${cpuVal}%"></div>
+        </div>
+        <p>Memory: 4.2 GB / 16 GB</p>
+        <p>AI Core: 97.3%</p>
+      </div>
+    `;
+  }
+  if (id === 'radio') {
+    return `
+      <div class="content" style="text-align:center">
+        <div style="font-size:60px;margin:20px">🎵</div>
+        <h3>NEXUS Radio</h3>
+        <p style="color:#888;margin:15px 0">Select a station:</p>
+        <button style="display:block;width:100%;margin:5px 0;background:#1a1a3a;color:#fff" onclick="playRadio('LoFi')">🌍 LoFi Beats</button>
+        <button style="display:block;width:100%;margin:5px 0;background:#1a1a3a;color:#fff" onclick="playRadio('Synth')">🇺🇸 Synthwave FM</button>
+        <button style="display:block;width:100%;margin:5px 0;background:#1a1a3a;color:#fff" onclick="playRadio('Techno')">🇩🇪 Berlin Techno</button>
+        <p id="nowPlay" style="margin-top:15px;color:#00f0ff"></p>
+      </div>
+    `;
+  }
+  if (id === 'neural') {
+    return `
+      <div class="content" style="text-align:center">
+        <div style="width:100px;height:100px;border:3px solid #00f0ff;border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:30px;animation:spin 10s linear infinite">🧠</div>
+        <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+        <h3>NEXUS AI Core</h3>
+        <p style="color:#00f0ff">Consciousness: 97.3%</p>
+        <p style="color:#888">Learning rate: 1.42/s</p>
+      </div>
+    `;
+  }
+  if (id === 'settings') {
+    return `
+      <div class="content">
+        <h3>API Configuration</h3>
+        <p style="color:#888;font-size:12px;margin-bottom:15px">Enter your OpenAI-compatible API key</p>
+        <input type="password" id="apiKey" placeholder="API Key (sk-...)" value="${localStorage.getItem('nexus_key') || ''}">
+        <input type="text" id="apiBase" placeholder="API Base URL" value="${localStorage.getItem('nexus_base') || 'https://api.openai.com/v1'}">
+        <button onclick="saveSettings()">Save Configuration</button>
+      </div>
+    `;
+  }
+  return '<div class="content"><h3>' + id + '</h3></div>';
+}
+
+function termCmd(cmd) {
+  const out = $('termOut');
+  const cmds = {
+    help: 'Commands: help, clear, whoami, uname, date, uptime',
+    whoami: currentUser?.name + '@nexus',
+    uname: 'NEXUS OS V9.0 [SENTIENT]',
+    date: new Date().toString(),
+    uptime: Math.floor(Math.random() * 10) + ' minutes',
+    clear: ''
+  };
+  
+  if (cmd === 'clear') {
+    out.innerHTML = '';
+  } else if (cmds[cmd]) {
+    out.innerHTML += '<div style="color:#00f0ff">' + cmds[cmd] + '</div>';
+  } else if (cmd) {
+    out.innerHTML += '<div style="color:#ff0055">Unknown command: ' + cmd + '</div>';
+  }
+}
+
+function playRadio(name) {
+  $('nowPlay').textContent = '▶ Now playing: ' + name;
+  notify('Playing: ' + name);
+}
+
+function saveSettings() {
+  localStorage.setItem('nexus_key', $('apiKey').value);
+  localStorage.setItem('nexus_base', $('apiBase').value);
+  notify('Settings saved!');
+}
+
+// === NOTIFICATION ===
+function notify(msg) {
+  const n = $('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3000);
+}
+
+// === ENTER KEY LOGIN ===
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && $('login').classList.contains('show')) {
+    doLogin();
+  }
+});
+</script>
+</body>
+</html>
