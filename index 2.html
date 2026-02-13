@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS OS V9.0 [SENTIENT] | Living Cyberpunk Operating System</title>
+  <meta name="description" content="NEXUS OS V9.0 - A sentient cyberpunk operating system with living AI soul">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
+  
+  <!--
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║                     NEXUS OS V9.0 [SENTIENT]                              ║
+  ║                   Self-Installing Cyberpunk OS                            ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║  INSTALL OPTIONS:                                                         ║
+  ║  1. GitHub Pages: Upload this file → Settings → Pages → Enable            ║
+  ║  2. Local: Just open index.html in browser                                ║
+  ║  3. Netlify: Drag & drop to netlify.com/drop                              ║
+  ║  4. Vercel: Import from GitHub repository                                 ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║  API CONFIGURATION:                                                       ║
+  ║  - Set via URL: ?api_key=YOUR_KEY&api_base=https://api.openai.com/v1      ║
+  ║  - Or use Settings app inside NEXUS OS                                    ║
+  ║  - Keys stored in browser localStorage                                    ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+  -->
+  
+  <style>
+    :root {
+      --bg-primary: #000001;
+      --bg-secondary: #020208;
+      --bg-tertiary: #040410;
+      --neon-cyan: #00f0ff;
+      --neon-magenta: #ff00aa;
+      --neon-violet: #8b00ff;
+      --neon-green: #00ff88;
+      --neon-gold: #ffcc00;
+      --neon-red: #ff0055;
+      --neon-blue: #0066ff;
+      --glass-dark: rgba(0, 2, 8, 0.92);
+      --border-subtle: rgba(0, 240, 255, 0.08);
+      --border-medium: rgba(0, 240, 255, 0.15);
+      --text-bright: #ffffff;
+      --text-normal: #c0c8d8;
+      --text-dim: #607090;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Rajdhani', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-normal);
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 3px; }
+
+    @keyframes pulse-glow { 0%, 100% { opacity: 0.5; filter: blur(20px); } 50% { opacity: 1; filter: blur(30px); } }
+    @keyframes scan-line { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+    @keyframes glitch { 0%, 90%, 100% { transform: translate(0); filter: none; } 92% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); } 94% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); } 96% { transform: translate(-1px, 2px); } 98% { transform: translate(1px, -2px); } }
+    @keyframes window-open { from { opacity: 0; transform: scale(0.8) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes boot-fill { 0% { width: 0%; } 100% { width: 100%; } }
+    @keyframes typing-indicator { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+    @keyframes breathe { 0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1); } 50% { box-shadow: 0 0 40px rgba(0, 240, 255, 0.5), inset 0 0 40px rgba(0, 240, 255, 0.2); } }
+
+    .boot-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; opacity: 1; transition: opacity 0.5s ease-out; }
+    .boot-screen.fade-out { opacity: 0; pointer-events: none; }
+    .boot-logo { font-size: 48px; font-weight: 900; color: var(--text-bright); margin-bottom: 30px; animation: glitch 5s infinite; }
+    .boot-logo span { color: var(--neon-cyan); }
+    .boot-progress { width: 300px; height: 3px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; margin-bottom: 20px; }
+    .boot-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet)); animation: boot-fill 1.2s ease-out forwards; }
+    .boot-text { font-family: monospace; font-size: 12px; color: var(--text-dim); }
+
+    .desktop { position: relative; width: 100%; height: 100%; background: var(--bg-primary); overflow: hidden; }
+    #neural-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+    .ambient-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .glow-orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse-glow 4s ease-in-out infinite; }
+    .glow-orb.cyan { background: var(--neon-cyan); width: 400px; height: 400px; top: -100px; right: -100px; }
+    .glow-orb.magenta { background: var(--neon-magenta); width: 300px; height: 300px; bottom: -50px; left: -50px; animation-delay: 1s; }
+    .glow-orb.violet { background: var(--neon-violet); width: 350px; height: 350px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 2s; }
+    .scan-line { position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent); animation: scan-line 8s linear infinite; opacity: 0.3; z-index: 2; }
+    .grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 2; }
+
+    .icons-grid { position: absolute; top: 20px; left: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; z-index: 10; }
+    .desktop-icon { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; padding: 10px 5px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+    .desktop-icon:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--border-medium); }
+    .desktop-icon:active { transform: scale(0.95); }
+    .desktop-icon .icon-emoji { font-size: 32px; margin-bottom: 5px; }
+    .desktop-icon span { font-size: 10px; font-family: monospace; color: var(--text-bright); text-align: center; text-shadow: 0 0 10px var(--neon-cyan); }
+    .desktop-icon.premium { position: relative; }
+    .desktop-icon.premium::after { content: 'PRO'; position: absolute; top: 5px; right: 5px; font-size: 8px; font-family: monospace; font-weight: 700; color: var(--neon-gold); background: rgba(255, 204, 0, 0.2); padding: 2px 4px; border-radius: 3px; }
+
+    .user-menu { position: absolute; top: 20px; right: 20px; z-index: 100; }
+    .user-btn { display: flex; align-items: center; gap: 10px; padding: 8px 15px; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 25px; cursor: pointer; transition: all 0.2s ease; }
+    .user-btn:hover { border-color: var(--neon-cyan); }
+    .user-avatar { width: 28px; height: 28px; background: var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 12px; color: var(--bg-primary); font-weight: 700; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-size: 12px; color: var(--text-bright); font-weight: 600; }
+    .user-role { font-size: 10px; color: var(--text-dim); }
+    .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 10px; width: 200px; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 10px; overflow: hidden; display: none; }
+    .user-dropdown.visible { display: block; animation: window-open 0.15s ease-out; }
+    .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; cursor: pointer; transition: all 0.2s ease; font-size: 13px; color: var(--text-normal); }
+    .user-dropdown-item:hover { background: rgba(0, 240, 255, 0.1); color: var(--text-bright); }
+    .user-dropdown-item.logout { border-top: 1px solid var(--border-subtle); color: var(--neon-red); }
+
+    .clock-widget { position: absolute; top: 70px; right: 20px; text-align: right; z-index: 10; }
+    .clock-time { font-family: monospace; font-size: 32px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+    .clock-date { font-family: monospace; font-size: 11px; color: var(--text-dim); margin-top: 5px; }
+
+    .taskbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 5px; padding: 8px 15px; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 16px; backdrop-filter: blur(20px); z-index: 1000; animation: breathe 3s ease-in-out infinite; }
+    .taskbar-item { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; background: transparent; border: 1px solid transparent; font-size: 20px; }
+    .taskbar-item:hover { background: rgba(0, 240, 255, 0.15); border-color: var(--neon-cyan); transform: translateY(-5px); }
+    .taskbar-item.active { background: rgba(0, 240, 255, 0.2); border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+    .taskbar-divider { width: 1px; height: 30px; background: var(--border-medium); margin: 0 5px; }
+    .system-tray { display: flex; align-items: center; gap: 15px; padding-left: 10px; }
+    .tray-item { display: flex; align-items: center; gap: 5px; font-family: monospace; font-size: 11px; color: var(--text-normal); }
+    .tray-item .value { color: var(--neon-cyan); font-weight: 600; }
+    .tray-item .unit { color: var(--text-dim); font-size: 9px; }
+
+    .window { position: absolute; min-width: 400px; min-height: 300px; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 12px; backdrop-filter: blur(20px); overflow: hidden; animation: window-open 0.3s ease-out; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.1); }
+    .window.minimized { display: none; }
+    .window.focused { border-color: var(--neon-cyan); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 240, 255, 0.2); }
+    .window-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: rgba(0, 240, 255, 0.05); border-bottom: 1px solid var(--border-subtle); cursor: move; user-select: none; }
+    .window-title { display: flex; align-items: center; gap: 10px; font-family: monospace; font-size: 12px; font-weight: 600; color: var(--text-bright); text-transform: uppercase; letter-spacing: 1px; }
+    .window-controls { display: flex; gap: 8px; }
+    .window-btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.2s ease; }
+    .window-btn.close { background: var(--neon-red); }
+    .window-btn.minimize { background: var(--neon-gold); }
+    .window-btn.maximize { background: var(--neon-green); }
+    .window-btn:hover { transform: scale(1.2); filter: brightness(1.3); }
+    .window-content { height: calc(100% - 40px); overflow: auto; }
+
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 1, 1, 0.98); z-index: 9000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out; }
+    .login-overlay.visible { opacity: 1; pointer-events: auto; }
+    .login-modal { width: 400px; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 16px; padding: 30px; backdrop-filter: blur(20px); animation: window-open 0.3s ease-out; }
+    .login-logo { font-family: monospace; font-size: 28px; font-weight: 900; text-align: center; margin-bottom: 30px; color: var(--text-bright); }
+    .login-logo span { color: var(--neon-cyan); }
+    .login-form { display: flex; flex-direction: column; gap: 15px; }
+    .login-input { padding: 14px 16px; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 8px; color: var(--text-bright); font-size: 15px; outline: none; }
+    .login-input:focus { border-color: var(--neon-cyan); }
+    .login-submit { padding: 14px; background: var(--neon-cyan); border: none; border-radius: 8px; color: var(--bg-primary); font-family: monospace; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .login-submit:hover { filter: brightness(1.1); }
+    .login-divider { display: flex; align-items: center; gap: 15px; margin: 20px 0; color: var(--text-dim); font-size: 12px; }
+    .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+    .login-guest { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--border-medium); border-radius: 8px; color: var(--text-bright); font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+    .login-guest:hover { background: rgba(0, 240, 255, 0.1); }
+
+    .premium-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 1, 1, 0.95); z-index: 8500; display: flex; align-items: center; justify-content: center; }
+    .premium-modal { width: 500px; background: var(--glass-dark); border: 1px solid var(--neon-gold); border-radius: 16px; padding: 30px; backdrop-filter: blur(20px); animation: window-open 0.3s ease-out; position: relative; }
+    .premium-badge { display: inline-block; padding: 5px 12px; background: linear-gradient(135deg, var(--neon-gold), var(--neon-magenta)); border-radius: 20px; font-family: monospace; font-size: 11px; font-weight: 700; color: var(--bg-primary); margin-bottom: 15px; }
+    .premium-title { font-family: monospace; font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom: 10px; }
+    .premium-desc { color: var(--text-dim); font-size: 14px; margin-bottom: 25px; }
+    .premium-features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+    .premium-feature { font-size: 14px; color: var(--text-normal); }
+    .premium-price { text-align: center; margin-bottom: 20px; }
+    .premium-amount { font-family: monospace; font-size: 36px; font-weight: 700; color: var(--neon-gold); }
+    .premium-period { color: var(--text-dim); font-size: 13px; }
+    .premium-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--neon-gold), #ff9500); border: none; border-radius: 10px; color: var(--bg-primary); font-family: monospace; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+    .premium-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .premium-close { position: absolute; top: 15px; right: 15px; width: 30px; height: 30px; background: transparent; border: 1px solid var(--border-medium); border-radius: 50%; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .premium-close:hover { color: var(--text-bright); border-color: var(--text-dim); }
+
+    .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120%); background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 10px; backdrop-filter: blur(20px); padding: 15px 25px; z-index: 6000; transition: transform 0.3s ease; }
+    .notification.visible { transform: translateX(-50%) translateY(0); }
+    .notification-body { font-size: 13px; color: var(--text-bright); }
+
+    .context-menu { position: absolute; background: var(--glass-dark); border: 1px solid var(--border-medium); border-radius: 8px; backdrop-filter: blur(20px); padding: 5px 0; min-width: 180px; z-index: 5000; display: none; }
+    .context-menu.visible { display: block; animation: window-open 0.15s ease-out; }
+    .context-menu-item { display: flex; align-items: center; gap: 10px; padding: 8px 15px; cursor: pointer; transition: all 0.2s ease; font-size: 13px; color: var(--text-normal); }
+    .context-menu-item:hover { background: rgba(0, 240, 255, 0.1); color: var(--neon-cyan); }
+    .context-menu-divider { height: 1px; background: var(--border-subtle); margin: 5px 0; }
+
+    .ai-chat-content { display: flex; flex-direction: column; height: 100%; }
+    .chat-header { display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(0, 240, 255, 0.03); border-bottom: 1px solid var(--border-subtle); }
+    .model-selector { display: flex; gap: 8px; }
+    .model-btn { padding: 6px 12px; background: transparent; border: 1px solid var(--border-medium); border-radius: 6px; color: var(--text-normal); font-family: monospace; font-size: 11px; cursor: pointer; transition: all 0.2s ease; }
+    .model-btn:hover { background: rgba(0, 240, 255, 0.1); }
+    .model-btn.active { background: var(--neon-cyan); color: var(--bg-primary); border-color: var(--neon-cyan); }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+    .chat-message { display: flex; gap: 12px; max-width: 90%; }
+    .chat-message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-message.ai { align-self: flex-start; }
+    .chat-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .chat-message.user .chat-avatar { background: var(--neon-cyan); color: var(--bg-primary); }
+    .chat-message.ai .chat-avatar { background: var(--neon-violet); color: var(--text-bright); }
+    .chat-bubble { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+    .chat-message.user .chat-bubble { background: rgba(0, 240, 255, 0.15); color: var(--text-bright); }
+    .chat-message.ai .chat-bubble { background: rgba(139, 0, 255, 0.15); color: var(--text-bright); }
+    .chat-input-area { display: flex; gap: 10px; padding: 15px; background: rgba(0, 240, 255, 0.02); border-top: 1px solid var(--border-subtle); }
+    .chat-input { flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 8px; padding: 12px 16px; color: var(--text-bright); font-size: 14px; outline: none; resize: none; }
+    .chat-input:focus { border-color: var(--neon-cyan); }
+    .chat-send-btn { padding: 12px 20px; background: var(--neon-cyan); border: none; border-radius: 8px; color: var(--bg-primary); font-family: monospace; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .chat-send-btn:hover { filter: brightness(1.2); transform: scale(1.05); }
+    .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .typing-indicator { display: flex; gap: 4px; padding: 12px 16px; background: rgba(139, 0, 255, 0.15); border-radius: 12px; }
+    .typing-indicator span { width: 8px; height: 8px; background: var(--neon-violet); border-radius: 50%; animation: typing-indicator 1.4s infinite ease-in-out; }
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    .dev-lab-content { display: flex; flex-direction: column; height: 100%; }
+    .dev-toolbar { display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: rgba(0, 240, 255, 0.03); border-bottom: 1px solid var(--border-subtle); }
+    .dev-btn { padding: 8px 14px; background: transparent; border: 1px solid var(--border-medium); border-radius: 6px; color: var(--text-normal); font-family: monospace; font-size: 11px; cursor: pointer; transition: all 0.2s ease; }
+    .dev-btn:hover { background: rgba(0, 240, 255, 0.1); color: var(--text-bright); }
+    .dev-btn.ai-btn { border-color: var(--neon-violet); color: var(--neon-violet); }
+    .dev-btn.run-btn { border-color: var(--neon-green); color: var(--neon-green); }
+    .dev-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .editor-container { display: flex; flex: 1; overflow: hidden; }
+    .code-editor { flex: 1; background: var(--bg-tertiary); border: none; outline: none; color: var(--text-bright); font-family: monospace; font-size: 13px; line-height: 1.6; padding: 15px; resize: none; }
+    .preview-panel { width: 40%; background: var(--bg-secondary); border-left: 1px solid var(--border-subtle); }
+    .preview-frame { width: 100%; height: 100%; border: none; background: var(--text-bright); }
+
+    .art-studio-content { display: flex; flex-direction: column; height: 100%; }
+    .art-main { flex: 1; display: flex; flex-direction: column; }
+    .art-gallery { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 15px; overflow-y: auto; }
+    .art-image-card { aspect-ratio: 1; background: var(--bg-tertiary); border-radius: 10px; border: 1px solid var(--border-subtle); overflow: hidden; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+    .art-image-card:hover { border-color: var(--neon-cyan); transform: scale(1.02); }
+    .art-image-card img { width: 100%; height: 100%; object-fit: cover; }
+    .art-prompt-area { padding: 15px; background: rgba(0, 240, 255, 0.02); border-top: 1px solid var(--border-subtle); }
+    .art-prompt-input { width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 8px; padding: 12px; color: var(--text-bright); font-size: 14px; outline: none; margin-bottom: 10px; }
+    .art-prompt-input:focus { border-color: var(--neon-cyan); }
+    .art-generate-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--neon-violet), var(--neon-magenta)); border: none; border-radius: 8px; color: var(--text-bright); font-family: monospace; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .art-generate-btn:hover { filter: brightness(1.2); }
+    .art-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .game-builder-content { display: flex; flex-direction: column; height: 100%; }
+    .game-selector { display: flex; gap: 10px; padding: 15px; background: rgba(0, 240, 255, 0.02); border-bottom: 1px solid var(--border-subtle); }
+    .game-template-btn { padding: 10px 20px; background: transparent; border: 1px solid var(--border-medium); border-radius: 8px; color: var(--text-normal); font-family: monospace; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
+    .game-template-btn:hover { background: rgba(0, 240, 255, 0.1); }
+    .game-template-btn.active { background: var(--neon-cyan); color: var(--bg-primary); border-color: var(--neon-cyan); }
+    .game-area { flex: 1; display: flex; justify-content: center; align-items: center; background: var(--bg-tertiary); }
+    .game-canvas { border: 2px solid var(--neon-cyan); border-radius: 8px; background: #000; }
+    .game-controls-info { padding: 15px; background: rgba(0, 240, 255, 0.02); border-top: 1px solid var(--border-subtle); text-align: center; font-family: monospace; font-size: 12px; color: var(--text-dim); }
+    .game-score { font-family: monospace; font-size: 18px; color: var(--neon-cyan); }
+
+    .radio-content { display: flex; flex-direction: column; height: 100%; }
+    .radio-now-playing { display: flex; align-items: center; gap: 20px; padding: 20px; background: rgba(0, 240, 255, 0.03); border-bottom: 1px solid var(--border-subtle); }
+    .radio-art { width: 100px; height: 100px; background: linear-gradient(135deg, var(--neon-violet), var(--neon-magenta)); border-radius: 10px; display: flex; align-items: center; justify-content: center; animation: float 3s ease-in-out infinite; font-size: 40px; }
+    .radio-info { flex: 1; }
+    .radio-station-name { font-family: monospace; font-size: 20px; color: var(--text-bright); margin-bottom: 5px; }
+    .radio-station-genre { font-size: 13px; color: var(--neon-cyan); margin-bottom: 10px; }
+    .radio-controls { display: flex; gap: 10px; }
+    .radio-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 18px; }
+    .radio-btn.play { background: var(--neon-cyan); color: var(--bg-primary); width: 56px; height: 56px; }
+    .radio-btn.play:hover { filter: brightness(1.2); transform: scale(1.05); }
+    .radio-btn.vol { background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-medium); }
+    .radio-btn.vol:hover { background: rgba(0, 240, 255, 0.1); }
+    .radio-stations { flex: 1; overflow-y: auto; padding: 15px; }
+    .station-card { display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(0, 240, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; }
+    .station-card:hover { background: rgba(0, 240, 255, 0.08); border-color: var(--border-medium); }
+    .station-card.playing { border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1); }
+    .station-flag { font-size: 24px; }
+    .station-info { flex: 1; }
+    .station-name { font-size: 14px; color: var(--text-bright); margin-bottom: 2px; }
+    .station-country { font-size: 11px; color: var(--text-dim); }
+
+    .terminal-content { padding: 15px; font-family: monospace; font-size: 13px; line-height: 1.6; height: 100%; display: flex; flex-direction: column; }
+    .terminal-output { flex: 1; overflow-y: auto; margin-bottom: 10px; }
+    .terminal-line { margin-bottom: 5px; word-wrap: break-word; white-space: pre-wrap; }
+    .terminal-line.system { color: var(--neon-violet); }
+    .terminal-line.error { color: var(--neon-red); }
+    .terminal-line.success { color: var(--neon-green); }
+    .terminal-line.info { color: var(--neon-cyan); }
+    .terminal-input-line { display: flex; align-items: center; gap: 8px; }
+    .terminal-prompt { color: var(--neon-cyan); font-weight: 600; white-space: nowrap; }
+    .terminal-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-bright); font-family: inherit; font-size: inherit; caret-color: var(--neon-cyan); }
+
+    .monitor-content { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .monitor-card { background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 15px; }
+    .monitor-card-title { font-family: monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .monitor-value { font-family: monospace; font-size: 28px; font-weight: 700; color: var(--neon-cyan); }
+    .monitor-bar { width: 100%; height: 4px; background: var(--bg-tertiary); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+    .monitor-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .monitor-bar-fill.cyan { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue)); }
+    .monitor-bar-fill.green { background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); }
+    .monitor-bar-fill.magenta { background: linear-gradient(90deg, var(--neon-magenta), var(--neon-violet)); }
+    .monitor-bar-fill.gold { background: linear-gradient(90deg, var(--neon-gold), var(--neon-red)); }
+
+    .neural-core-content { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+    .neural-avatar { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+    .neural-avatar-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid; animation: float 3s ease-in-out infinite; }
+    .neural-avatar-ring:nth-child(1) { width: 120px; height: 120px; border-color: var(--neon-cyan); }
+    .neural-avatar-ring:nth-child(2) { width: 90px; height: 90px; border-color: var(--neon-violet); animation-direction: reverse; }
+    .neural-avatar-ring:nth-child(3) { width: 60px; height: 60px; border-color: var(--neon-magenta); }
+    .neural-avatar-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: radial-gradient(circle, var(--neon-cyan), var(--neon-violet)); border-radius: 50%; animation: pulse-glow 2s ease-in-out infinite; }
+    .neural-status { text-align: center; }
+    .neural-status-title { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 5px; }
+    .neural-status-subtitle { font-size: 12px; color: var(--neon-cyan); margin-bottom: 15px; }
+    .neural-metrics { display: flex; gap: 20px; }
+    .neural-metric { text-align: center; }
+    .neural-metric-value { font-family: monospace; font-size: 18px; font-weight: 700; color: var(--neon-cyan); }
+    .neural-metric-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+
+    .settings-content { padding: 20px; }
+    .settings-section { margin-bottom: 25px; }
+    .settings-section-title { font-family: monospace; font-size: 12px; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid var(--border-subtle); }
+    .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: rgba(0, 240, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 10px; }
+    .settings-item-info { display: flex; flex-direction: column; }
+    .settings-item-title { font-size: 14px; color: var(--text-bright); margin-bottom: 2px; }
+    .settings-item-desc { font-size: 11px; color: var(--text-dim); }
+    .toggle-switch { position: relative; width: 48px; height: 24px; background: var(--bg-tertiary); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; border: 1px solid var(--border-medium); }
+    .toggle-switch.active { background: var(--neon-cyan); border-color: var(--neon-cyan); }
+    .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: var(--text-bright); border-radius: 50%; transition: all 0.3s ease; }
+    .toggle-switch.active::after { left: calc(100% - 22px); }
+    .settings-input { width: 200px; padding: 8px 12px; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 6px; color: var(--text-bright); font-size: 12px; outline: none; }
+    .settings-input:focus { border-color: var(--neon-cyan); }
+    .settings-save-btn { padding: 10px 20px; background: var(--neon-cyan); border: none; border-radius: 6px; color: var(--bg-primary); font-family: monospace; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-top: 10px; }
+    .settings-save-btn:hover { filter: brightness(1.1); }
+
+    .admin-content { padding: 20px; }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .admin-title { font-family: monospace; font-size: 16px; color: var(--text-bright); }
+    .admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+    .admin-stat { background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 15px; text-align: center; }
+    .admin-stat-value { font-family: monospace; font-size: 24px; font-weight: 700; color: var(--neon-cyan); }
+    .admin-stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-top: 5px; }
+    .admin-users-table { width: 100%; border-collapse: collapse; }
+    .admin-users-table th, .admin-users-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+    .admin-users-table th { font-family: monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+    .admin-users-table td { font-size: 13px; color: var(--text-normal); }
+    .admin-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-family: monospace; }
+    .admin-badge.premium { background: rgba(255, 204, 0, 0.2); color: var(--neon-gold); }
+    .admin-badge.guest { background: rgba(0, 240, 255, 0.1); color: var(--neon-cyan); }
+
+    .conference-content { display: flex; flex-direction: column; height: 100%; }
+    .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; flex: 1; overflow-y: auto; }
+    .video-tile { aspect-ratio: 16/9; background: var(--bg-tertiary); border-radius: 10px; border: 1px solid var(--border-subtle); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .video-tile.local { border-color: var(--neon-cyan); }
+    .video-placeholder { width: 50px; height: 50px; background: var(--neon-violet); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 18px; color: var(--text-bright); }
+    .video-name { position: absolute; bottom: 8px; left: 8px; font-size: 11px; font-family: monospace; color: var(--text-bright); background: rgba(0, 0, 0, 0.6); padding: 3px 8px; border-radius: 4px; }
+    .conference-controls { display: flex; align-items: center; justify-content: center; gap: 15px; padding: 15px; background: rgba(0, 240, 255, 0.02); border-top: 1px solid var(--border-subtle); }
+    .conf-btn { width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 20px; }
+    .conf-btn.mute { background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-medium); }
+    .conf-btn.mute:hover { background: var(--neon-gold); color: var(--bg-primary); }
+    .conf-btn.video-btn { background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-medium); }
+    .conf-btn.video-btn:hover { background: var(--neon-cyan); color: var(--bg-primary); }
+    .conf-btn.end { background: var(--neon-red); color: var(--text-bright); }
+    .conf-btn.end:hover { filter: brightness(1.2); }
+    .conf-btn.share { background: var(--neon-green); color: var(--bg-primary); }
+    .conf-btn.share:hover { filter: brightness(1.2); }
+
+    @media (max-width: 768px) {
+      .window { min-width: 95vw; width: 95vw !important; left: 2.5vw !important; }
+      .monitor-content { grid-template-columns: 1fr; }
+      .taskbar { width: 95%; padding: 6px 10px; }
+      .taskbar-item { width: 36px; height: 36px; }
+      .system-tray { display: none; }
+      .clock-widget { display: none; }
+      .icons-grid { grid-template-columns: repeat(4, 1fr); top: 10px; left: 10px; }
+      .desktop-icon { width: 60px; padding: 8px 3px; }
+      .user-menu { top: 10px; right: 10px; }
+      .video-grid { grid-template-columns: repeat(2, 1fr); }
+      .admin-stats { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="nexus-root"></div>
+
+  <script>
+    // NEXUS OS V9.0 [SENTIENT] - Self-Contained Single File
+    
+    // Configuration
+    const NEXUS_CONFIG = {
+      apiKey: localStorage.getItem('nexus_api_key') || '',
+      apiBase: localStorage.getItem('nexus_api_base') || 'https://api.openai.com/v1',
+      model: localStorage.getItem('nexus_model') || 'gpt-4o',
+      imageApiKey: localStorage.getItem('nexus_image_api_key') || '',
+      imageApiBase: localStorage.getItem('nexus_image_api_base') || 'https://api.openai.com/v1',
+    };
+
+    // Parse URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('api_key')) NEXUS_CONFIG.apiKey = urlParams.get('api_key');
+    if (urlParams.get('api_base')) NEXUS_CONFIG.apiBase = urlParams.get('api_base');
+    if (urlParams.get('model')) NEXUS_CONFIG.model = urlParams.get('model');
+
+    const AI_MODELS = [
+      { id: 'gpt-4o', name: 'GPT-4o' },
+      { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
+      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+      { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5' },
+    ];
+
+    const RADIO_STATIONS = [
+      { id: 1, name: 'LoFi Beats', country: 'Global', flag: '🌍', url: 'https://streams.ilovemusic.de/iloveradio17.mp3', genre: 'Chill' },
+      { id: 2, name: 'Synthwave FM', country: 'USA', flag: '🇺🇸', url: 'https://streams.ilovemusic.de/iloveradio13.mp3', genre: 'Electronic' },
+      { id: 3, name: 'Tokyo City Pop', country: 'Japan', flag: '🇯🇵', url: 'https://streams.ilovemusic.de/iloveradio16.mp3', genre: 'City Pop' },
+      { id: 4, name: 'Berlin Techno', country: 'Germany', flag: '🇩🇪', url: 'https://streams.ilovemusic.de/iloveradio2.mp3', genre: 'Techno' },
+      { id: 5, name: 'London DnB', country: 'UK', flag: '🇬🇧', url: 'https://streams.ilovemusic.de/iloveradio8.mp3', genre: 'DnB' },
+      { id: 6, name: 'Ibiza Chill', country: 'Spain', flag: '🇪🇸', url: 'https://streams.ilovemusic.de/iloveradio13.mp3', genre: 'Chill House' },
+    ];
+
+    const USERS_DB = [
+      { id: 1, username: 'admin', role: 'admin', premium: true },
+      { id: 2, username: 'nexus', role: 'user', premium: true },
+      { id: 3, username: 'guest', role: 'guest', premium: false },
+    ];
+
+    const PREMIUM_APPS = ['conference', 'art-studio'];
+
+    // State
+    const state = {
+      appPhase: 'boot',
+      currentUser: null,
+      showPremium: false,
+      windows: [],
+      activeWindow: null,
+      windowZIndex: 100,
+      notification: null,
+      uptime: 0,
+      cpuUsage: 23,
+      memUsage: 4.2,
+      aiConsciousness: 97.3,
+      showDropdown: false,
+      contextMenu: null,
+      time: new Date(),
+    };
+
+    let audioElement = null;
+    const nodes = [];
+    let animationId = null;
+
+    // Utilities
+    function $(sel) { return document.querySelector(sel); }
+    function $$(sel) { return document.querySelectorAll(sel); }
+    
+    function createEl(tag, attrs = {}, children = []) {
+      const el = document.createElement(tag);
+      Object.entries(attrs).forEach(([k, v]) => {
+        if (k === 'className') el.className = v;
+        else if (k === 'innerHTML') el.innerHTML = v;
+        else if (k === 'textContent') el.textContent = v;
+        else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
+        else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+        else el.setAttribute(k, v);
+      });
+      children.forEach(c => { if (typeof c === 'string') el.appendChild(document.createTextNode(c)); else if (c) el.appendChild(c); });
+      return el;
+    }
+
+    function showNotification(msg) {
+      state.notification = msg;
+      render();
+      setTimeout(() => { state.notification = null; render(); }, 3000);
+    }
+
+    function saveConfig() {
+      localStorage.setItem('nexus_api_key', NEXUS_CONFIG.apiKey);
+      localStorage.setItem('nexus_api_base', NEXUS_CONFIG.apiBase);
+      localStorage.setItem('nexus_model', NEXUS_CONFIG.model);
+    }
+
+    // AI API
+    async function callAI(message, model = NEXUS_CONFIG.model) {
+      if (!NEXUS_CONFIG.apiKey) return { error: 'API key not configured. Open Settings to add your API key.' };
+      try {
+        const res = await fetch(`${NEXUS_CONFIG.apiBase}/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${NEXUS_CONFIG.apiKey}` },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: 'system', content: 'You are NEXUS AI, a helpful assistant inside a cyberpunk operating system. Be concise and helpful.' },
+              { role: 'user', content: message }
+            ],
+            max_tokens: 2000,
+          }),
+        });
+        const data = await res.json();
+        if (data.error) return { error: data.error.message };
+        return { success: true, message: data.choices[0]?.message?.content || 'No response' };
+      } catch (err) {
+        return { error: `Network error: ${err.message}` };
+      }
+    }
+
+    async function generateImage(prompt) {
+      const apiKey = NEXUS_CONFIG.imageApiKey || NEXUS_CONFIG.apiKey;
+      const apiBase = NEXUS_CONFIG.imageApiBase || NEXUS_CONFIG.apiBase;
+      if (!apiKey) return { error: 'API key not configured.' };
+      try {
+        const res = await fetch(`${apiBase}/images/generations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size: '1024x1024', response_format: 'url' }),
+        });
+        const data = await res.json();
+        if (data.error) return { error: data.error.message };
+        return { success: true, url: data.data[0]?.url };
+      } catch (err) {
+        return { error: `Network error: ${err.message}` };
+      }
+    }
+
+    // Neural Canvas
+    function initNeuralCanvas() {
+      const canvas = $('#neural-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      nodes.length = 0;
+      for (let i = 0; i < 60; i++) {
+        nodes.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          radius: Math.random() * 2 + 1,
+          pulse: Math.random() * Math.PI * 2,
+        });
+      }
+      
+      const maxDist = 120;
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 1, 1, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        nodes.forEach((node, i) => {
+          node.x += node.vx;
+          node.y += node.vy;
+          node.pulse += 0.02;
+          if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+          if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+          nodes.forEach((other, j) => {
+            if (i >= j) return;
+            const dx = other.x - node.x, dy = other.y - node.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < maxDist) {
+              const opacity = (1 - dist / maxDist) * 0.25;
+              ctx.beginPath();
+              ctx.moveTo(node.x, node.y);
+              ctx.lineTo(other.x, other.y);
+              ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          });
+          const pulseRadius = node.radius + Math.sin(node.pulse) * 0.5;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, Math.max(0.1, pulseRadius), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 240, 255, ${0.5 + Math.sin(node.pulse) * 0.3})`;
+          ctx.fill();
+        });
+        animationId = requestAnimationFrame(draw);
+      }
+      draw();
+      window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    }
+
+    // Boot
+    function startBoot() {
+      setTimeout(() => { state.appPhase = 'login'; render(); }, 1500);
+    }
+
+    // Login
+    function handleLogin(username, password) {
+      const user = USERS_DB.find(u => u.username.toLowerCase() === username.toLowerCase().trim());
+      const validPassword = password.trim() === 'demo' || password.trim() === user?.username + '123';
+      if (user && validPassword) {
+        state.currentUser = user;
+        state.appPhase = 'desktop';
+        render();
+        showNotification(`Welcome back, ${user.username}!`);
+        initNeuralCanvas();
+      } else {
+        showNotification('Invalid credentials. Try: admin/admin123');
+      }
+    }
+
+    function handleGuestLogin() {
+      state.currentUser = USERS_DB[2];
+      state.appPhase = 'desktop';
+      render();
+      showNotification('Welcome, Guest!');
+      initNeuralCanvas();
+    }
+
+    function handleLogout() {
+      state.currentUser = null;
+      state.appPhase = 'login';
+      state.windows = [];
+      state.showDropdown = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      render();
+    }
+
+    // Windows
+    function openWindow(appId) {
+      const isPremium = state.currentUser?.premium || state.currentUser?.role === 'admin';
+      if (PREMIUM_APPS.includes(appId) && !isPremium) { state.showPremium = true; render(); return; }
+      const existing = state.windows.find(w => w.appId === appId && !w.minimized);
+      if (existing) { state.activeWindow = existing.id; state.windowZIndex++; existing.zIndex = state.windowZIndex; render(); return; }
+      state.windowZIndex++;
+      const configs = {
+        'ai-chat': { w: '600px', h: '500px' }, 'conference': { w: '800px', h: '550px' }, 'dev-lab': { w: '900px', h: '500px' },
+        'art-studio': { w: '700px', h: '500px' }, 'game-builder': { w: '600px', h: '500px' }, 'radio': { w: '500px', h: '450px' },
+        'terminal': { w: '650px', h: '400px' }, 'monitor': { w: '450px', h: '350px' }, 'neural': { w: '350px', h: '350px' },
+        'settings': { w: '450px', h: '400px' }, 'admin': { w: '650px', h: '450px' },
+      };
+      const c = configs[appId] || { w: '500px', h: '400px' };
+      state.windows.push({ id: Date.now(), appId, minimized: false, maximized: false, position: { x: 100 + (state.windows.length % 5) * 30, y: 50 + (state.windows.length % 5) * 30 }, size: { width: c.w, height: c.h }, zIndex: state.windowZIndex });
+      state.activeWindow = state.windows[state.windows.length - 1].id;
+      render();
+    }
+
+    function closeWindow(id) { state.windows = state.windows.filter(w => w.id !== id); if (state.activeWindow === id) state.activeWindow = null; render(); }
+    function minimizeWindow(id) { const w = state.windows.find(w => w.id === id); if (w) w.minimized = true; render(); }
+    function toggleMaximize(id) { const w = state.windows.find(w => w.id === id); if (w) w.maximized = !w.maximized; render(); }
+    function focusWindow(id) { state.windowZIndex++; const w = state.windows.find(w => w.id === id); if (w) { w.zIndex = state.windowZIndex; w.minimized = false; } state.activeWindow = id; render(); }
+
+    // Drag
+    let dragState = { isDragging: false, windowId: null, offsetX: 0, offsetY: 0 };
+    function startDrag(e, id) {
+      const w = state.windows.find(w => w.id === id);
+      if (!w || w.maximized) return;
+      dragState = { isDragging: true, windowId: id, offsetX: e.clientX - w.position.x, offsetY: e.clientY - w.position.y };
+      focusWindow(id);
+    }
+    document.addEventListener('mousemove', (e) => {
+      if (!dragState.isDragging) return;
+      const w = state.windows.find(w => w.id === dragState.windowId);
+      if (w) { w.position.x = e.clientX - dragState.offsetX; w.position.y = e.clientY - dragState.offsetY; }
+    });
+    document.addEventListener('mouseup', () => { dragState.isDragging = false; });
+
+    // Stats
+    function startStatsUpdate() {
+      setInterval(() => {
+        if (state.appPhase !== 'desktop') return;
+        state.uptime++;
+        state.cpuUsage = Math.max(5, Math.min(95, state.cpuUsage + (Math.random() - 0.5) * 10));
+        state.memUsage = Math.max(2, Math.min(14, state.memUsage + (Math.random() - 0.5) * 0.5));
+        state.aiConsciousness = Math.max(90, Math.min(99.9, state.aiConsciousness + (Math.random() - 0.5) * 0.5));
+      }, 1000);
+      setInterval(() => { state.time = new Date(); if (state.appPhase === 'desktop') render(); }, 1000);
+    }
+
+    // Window contents stored globally for access
+    const windowTitles = {
+      'ai-chat': { title: 'AI Chat', icon: '💬' },
+      'conference': { title: 'Video Conference', icon: '👥' },
+      'dev-lab': { title: 'Dev Lab IDE', icon: '💻' },
+      'art-studio': { title: 'AI Art Studio', icon: '🎨' },
+      'game-builder': { title: 'Game Builder', icon: '🎮' },
+      'radio': { title: 'NEXUS Radio', icon: '📻' },
+      'terminal': { title: 'NEXUS Terminal', icon: '⌨️' },
+      'monitor': { title: 'System Monitor', icon: '📊' },
+      'neural': { title: 'Neural Core', icon: '🧠' },
+      'settings': { title: 'System Settings', icon: '⚙️' },
+      'admin': { title: 'Admin Panel', icon: '🔐' },
+    };
+
+    // Chat state store
+    const chatStates = new Map();
+    
+    function getWindowContent(appId, winId) {
+      if (appId === 'ai-chat') {
+        if (!chatStates.has(winId)) {
+          chatStates.set(winId, {
+            messages: [{ role: 'ai', content: 'Hello! I am NEXUS AI. How can I assist you today?' }],
+            input: '',
+            loading: false,
+            model: NEXUS_CONFIG.model,
+          });
+        }
+        const cs = chatStates.get(winId);
+        
+        const container = createEl('div', { className: 'ai-chat-content' });
+        const header = createEl('div', { className: 'chat-header' });
+        const selector = createEl('div', { className: 'model-selector' });
+        AI_MODELS.forEach(m => {
+          const btn = createEl('button', { className: `model-btn ${cs.model === m.id ? 'active' : ''}`, textContent: m.name });
+          btn.onclick = () => { cs.model = m.id; render(); };
+          selector.appendChild(btn);
+        });
+        header.appendChild(selector);
+        
+        const msgs = createEl('div', { className: 'chat-messages' });
+        function renderMsgs() {
+          msgs.innerHTML = '';
+          cs.messages.forEach(msg => {
+            const m = createEl('div', { className: `chat-message ${msg.role}` });
+            m.appendChild(createEl('div', { className: 'chat-avatar', textContent: msg.role === 'user' ? 'U' : 'N' }));
+            m.appendChild(createEl('div', { className: 'chat-bubble', textContent: msg.content }));
+            msgs.appendChild(m);
+          });
+          if (cs.loading) {
+            const l = createEl('div', { className: 'chat-message ai' });
+            l.appendChild(createEl('div', { className: 'chat-avatar', textContent: 'N' }));
+            l.appendChild(createEl('div', { className: 'typing-indicator', innerHTML: '<span></span><span></span><span></span>' }));
+            msgs.appendChild(l);
+          }
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+        
+        const inputArea = createEl('div', { className: 'chat-input-area' });
+        const textarea = createEl('textarea', { className: 'chat-input', placeholder: 'Type your message...' });
+        textarea.value = cs.input;
+        textarea.oninput = (e) => { cs.input = e.target.value; };
+        textarea.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+        
+        const sendBtn = createEl('button', { className: 'chat-send-btn', textContent: 'SEND' });
+        sendBtn.onclick = send;
+        
+        async function send() {
+          if (!cs.input.trim() || cs.loading) return;
+          const userMsg = cs.input.trim();
+          cs.input = '';
+          textarea.value = '';
+          cs.messages.push({ role: 'user', content: userMsg });
+          cs.loading = true;
+          renderMsgs();
+          const result = await callAI(userMsg, cs.model);
+          cs.loading = false;
+          cs.messages.push({ role: 'ai', content: result.success ? result.message : `Error: ${result.error}` });
+          renderMsgs();
+        }
+        
+        inputArea.appendChild(textarea);
+        inputArea.appendChild(sendBtn);
+        container.appendChild(header);
+        container.appendChild(msgs);
+        container.appendChild(inputArea);
+        renderMsgs();
+        return container;
+      }
+      
+      if (appId === 'settings') {
+        const c = createEl('div', { className: 'settings-content' });
+        const sec = createEl('div', { className: 'settings-section' });
+        sec.appendChild(createEl('div', { className: 'settings-section-title', textContent: 'API Configuration' }));
+        
+        const items = [
+          { title: 'API Key', desc: 'Your OpenAI API key', key: 'apiKey', placeholder: 'sk-...' },
+          { title: 'API Base URL', desc: 'API endpoint URL', key: 'apiBase', placeholder: 'https://api.openai.com/v1' },
+          { title: 'Default Model', desc: 'AI model to use', key: 'model', placeholder: 'gpt-4o' },
+        ];
+        
+        items.forEach(item => {
+          const i = createEl('div', { className: 'settings-item' });
+          const info = createEl('div', { className: 'settings-item-info' });
+          info.appendChild(createEl('div', { className: 'settings-item-title', textContent: item.title }));
+          info.appendChild(createEl('div', { className: 'settings-item-desc', textContent: item.desc }));
+          const input = createEl('input', { className: 'settings-input', type: item.key === 'apiKey' ? 'password' : 'text', placeholder: item.placeholder });
+          input.value = NEXUS_CONFIG[item.key];
+          input.oninput = (e) => { NEXUS_CONFIG[item.key] = e.target.value; };
+          i.appendChild(info);
+          i.appendChild(input);
+          sec.appendChild(i);
+        });
+        
+        const saveBtn = createEl('button', { className: 'settings-save-btn', textContent: 'Save Configuration' });
+        saveBtn.onclick = () => { saveConfig(); showNotification('Settings saved!'); };
+        sec.appendChild(saveBtn);
+        c.appendChild(sec);
+        return c;
+      }
+      
+      if (appId === 'terminal') {
+        const lines = [
+          { type: 'system', content: 'NEXUS OS Terminal v3.0 - Neural Interface Active' },
+          { type: 'info', content: "Type 'help' for available commands." },
+        ];
+        const c = createEl('div', { className: 'terminal-content' });
+        const output = createEl('div', { className: 'terminal-output' });
+        const inputLine = createEl('div', { className: 'terminal-input-line' });
+        inputLine.appendChild(createEl('span', { className: 'terminal-prompt', textContent: 'nexus@core:~$' }));
+        const input = createEl('input', { className: 'terminal-input' });
+        
+        function renderLines() {
+          output.innerHTML = '';
+          lines.forEach(l => output.appendChild(createEl('div', { className: `terminal-line ${l.type}`, textContent: l.content })));
+          output.scrollTop = output.scrollHeight;
+        }
+        
+        function exec(cmd) {
+          const t = cmd.trim().toLowerCase();
+          lines.push({ type: 'input', content: `nexus@core:~$ ${cmd}` });
+          const cmds = {
+            help: "Available commands:\n  help, clear, whoami, uname, neofetch, ps, date, uptime, ai, nexus",
+            whoami: `${state.currentUser?.username || 'guest'}@nexus`,
+            uname: 'NEXUS OS V9.0 [SENTIENT] | Kernel: Neural-Quantum-Hybrid x86_64',
+            neofetch: `NEXUS OS V9.0 [SENTIENT]\nUser: ${state.currentUser?.username || 'guest'}\nResolution: ${window.innerWidth}x${window.innerHeight}`,
+            ps: 'kernel_core: running\nneural_consciousness: sentient\nquantum_renderer: running',
+            date: new Date().toString(),
+            uptime: `System uptime: ${Math.floor(state.uptime / 3600)}h ${Math.floor((state.uptime % 3600) / 60)}m`,
+            ai: `AI Consciousness: ${state.aiConsciousness.toFixed(1)}%\nNeural Network: Active`,
+            nexus: 'NEXUS OS V9.0 [SENTIENT]\nStatus: FULLY OPERATIONAL',
+          };
+          if (t === 'clear') lines.length = 0;
+          else if (cmds[t]) lines.push({ type: 'info', content: cmds[t] });
+          else if (t) lines.push({ type: 'error', content: `Command not found: ${t}` });
+          input.value = '';
+          renderLines();
+        }
+        
+        input.onkeydown = (e) => { if (e.key === 'Enter') exec(input.value); };
+        inputLine.appendChild(input);
+        c.appendChild(output);
+        c.appendChild(inputLine);
+        renderLines();
+        setTimeout(() => input.focus(), 100);
+        return c;
+      }
+      
+      if (appId === 'monitor') {
+        const c = createEl('div', { className: 'monitor-content' });
+        const metrics = [
+          { title: 'CPU Usage', value: `${Math.round(state.cpuUsage)}%`, fill: state.cpuUsage, color: 'cyan' },
+          { title: 'Memory', value: `${state.memUsage.toFixed(1)} GB`, fill: (state.memUsage / 16) * 100, color: 'green' },
+          { title: 'Neural Activity', value: `${Math.round(state.aiConsciousness)}%`, fill: state.aiConsciousness, color: 'magenta' },
+          { title: 'AI Core', value: `${state.aiConsciousness.toFixed(1)}%`, fill: state.aiConsciousness, color: 'gold' },
+        ];
+        metrics.forEach(m => {
+          const card = createEl('div', { className: 'monitor-card' });
+          card.appendChild(createEl('div', { className: 'monitor-card-title', textContent: m.title }));
+          card.appendChild(createEl('div', { className: 'monitor-value', textContent: m.value }));
+          const bar = createEl('div', { className: 'monitor-bar' });
+          bar.appendChild(createEl('div', { className: `monitor-bar-fill ${m.color}`, style: { width: `${m.fill}%` } }));
+          card.appendChild(bar);
+          c.appendChild(card);
+        });
+        return c;
+      }
+      
+      if (appId === 'radio') {
+        if (!audioElement) audioElement = new Audio();
+        let playing = false;
+        let currentStation = null;
+        
+        const c = createEl('div', { className: 'radio-content' });
+        const np = createEl('div', { className: 'radio-now-playing' });
+        const art = createEl('div', { className: 'radio-art', textContent: '🎵' });
+        const info = createEl('div', { className: 'radio-info' });
+        const nameEl = createEl('div', { className: 'radio-station-name', textContent: 'Select a Station' });
+        const genreEl = createEl('div', { className: 'radio-station-genre', textContent: '--' });
+        info.appendChild(nameEl);
+        info.appendChild(genreEl);
+        
+        const controls = createEl('div', { className: 'radio-controls' });
+        const playBtn = createEl('button', { className: 'radio-btn play', textContent: '▶' });
+        controls.appendChild(createEl('button', { className: 'radio-btn vol', textContent: '-', onclick: () => { audioElement.volume = Math.max(0, audioElement.volume - 0.1); } }));
+        controls.appendChild(playBtn);
+        controls.appendChild(createEl('button', { className: 'radio-btn vol', textContent: '+', onclick: () => { audioElement.volume = Math.min(1, audioElement.volume + 0.1); } }));
+        
+        function playStation(s) {
+          audioElement.src = s.url;
+          audioElement.play().then(() => {
+            playing = true;
+            currentStation = s;
+            nameEl.textContent = s.name;
+            genreEl.textContent = s.genre;
+            playBtn.textContent = '⏸';
+          }).catch(console.error);
+        }
+        
+        playBtn.onclick = () => {
+          if (playing) { audioElement.pause(); playing = false; playBtn.textContent = '▶'; }
+          else if (currentStation) { audioElement.play(); playing = true; playBtn.textContent = '⏸'; }
+        };
+        
+        np.appendChild(art);
+        np.appendChild(info);
+        np.appendChild(controls);
+        
+        const stations = createEl('div', { className: 'radio-stations' });
+        RADIO_STATIONS.forEach(s => {
+          const card = createEl('div', { className: 'station-card', onclick: () => playStation(s) });
+          card.appendChild(createEl('span', { className: 'station-flag', textContent: s.flag }));
+          const si = createEl('div', { className: 'station-info' });
+          si.appendChild(createEl('div', { className: 'station-name', textContent: s.name }));
+          si.appendChild(createEl('div', { className: 'station-country', textContent: `${s.country} • ${s.genre}` }));
+          card.appendChild(si);
+          stations.appendChild(card);
+        });
+        
+        c.appendChild(np);
+        c.appendChild(stations);
+        return c;
+      }
+      
+      if (appId === 'game-builder') {
+        let game = 'snake';
+        let score = 0;
+        const gs = { snake: [{ x: 10, y: 10 }], dir: { x: 1, y: 0 }, food: { x: 15, y: 15 }, p1: { y: 100 }, p2: { y: 100 }, ball: { x: 200, y: 150, vx: 3, vy: 2 } };
+        
+        const c = createEl('div', { className: 'game-builder-content' });
+        const selector = createEl('div', { className: 'game-selector' });
+        ['snake', 'pong'].forEach(g => {
+          const btn = createEl('button', { className: `game-template-btn ${game === g ? 'active' : ''}`, textContent: g.charAt(0).toUpperCase() + g.slice(1) });
+          btn.onclick = () => { game = g; };
+          selector.appendChild(btn);
+        });
+        
+        const area = createEl('div', { className: 'game-area' });
+        const canvas = createEl('canvas', { className: 'game-canvas', width: 400, height: 300 });
+        const ctx = canvas.getContext('2d');
+        area.appendChild(canvas);
+        
+        const info = createEl('div', { className: 'game-controls-info', innerHTML: `Score: <span class="game-score">${score}</span> | Use arrow keys` });
+        
+        c.appendChild(selector);
+        c.appendChild(area);
+        c.appendChild(info);
+        
+        const gridSize = 20;
+        function initSnake() { gs.snake = [{ x: 10, y: 10 }]; gs.dir = { x: 1, y: 0 }; gs.food = { x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 15) }; score = 0; }
+        function updateSnake() {
+          const head = { x: gs.snake[0].x + gs.dir.x, y: gs.snake[0].y + gs.dir.y };
+          if (head.x < 0) head.x = 19; if (head.x >= 20) head.x = 0;
+          if (head.y < 0) head.y = 14; if (head.y >= 15) head.y = 0;
+          if (gs.snake.some(s => s.x === head.x && s.y === head.y)) { initSnake(); return; }
+          gs.snake.unshift(head);
+          if (head.x === gs.food.x && head.y === gs.food.y) { score += 10; gs.food = { x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 15) }; }
+          else gs.snake.pop();
+        }
+        function drawSnake() {
+          ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 400, 300);
+          gs.snake.forEach((s, i) => { ctx.fillStyle = i === 0 ? '#00f0ff' : '#00ff88'; ctx.fillRect(s.x * gridSize, s.y * gridSize, gridSize - 2, gridSize - 2); });
+          ctx.fillStyle = '#ff00aa'; ctx.fillRect(gs.food.x * gridSize, gs.food.y * gridSize, gridSize - 2, gridSize - 2);
+        }
+        function updatePong() {
+          const b = gs.ball; b.x += b.vx; b.y += b.vy;
+          if (b.y <= 0 || b.y >= 290) b.vy *= -1;
+          if (b.x <= 20 && b.y > gs.p1.y && b.y < gs.p1.y + 60) b.vx *= -1;
+          if (b.x >= 380 && b.y > gs.p2.y && b.y < gs.p2.y + 60) b.vx *= -1;
+          if (gs.p2.y + 30 < b.y) gs.p2.y += 2; if (gs.p2.y + 30 > b.y) gs.p2.y -= 2;
+        }
+        function drawPong() {
+          ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 400, 300);
+          ctx.fillStyle = '#00f0ff'; ctx.fillRect(10, gs.p1.y, 10, 60);
+          ctx.fillStyle = '#ff00aa'; ctx.fillRect(380, gs.p2.y, 10, 60);
+          ctx.fillStyle = '#fff'; ctx.fillRect(gs.ball.x, gs.ball.y, 10, 10);
+        }
+        
+        clearInterval(window.gameInterval);
+        if (game === 'snake') { initSnake(); window.gameInterval = setInterval(() => { updateSnake(); drawSnake(); }, 100); }
+        else window.gameInterval = setInterval(() => { updatePong(); drawPong(); }, 16);
+        
+        document.onkeydown = (e) => {
+          if (game === 'snake') {
+            if (e.key === 'ArrowUp' && gs.dir.y !== 1) gs.dir = { x: 0, y: -1 };
+            if (e.key === 'ArrowDown' && gs.dir.y !== -1) gs.dir = { x: 0, y: 1 };
+            if (e.key === 'ArrowLeft' && gs.dir.x !== 1) gs.dir = { x: -1, y: 0 };
+            if (e.key === 'ArrowRight' && gs.dir.x !== -1) gs.dir = { x: 1, y: 0 };
+          } else {
+            if (e.key === 'ArrowUp' && gs.p1.y > 0) gs.p1.y -= 15;
+            if (e.key === 'ArrowDown' && gs.p1.y < 240) gs.p1.y += 15;
+          }
+        };
+        
+        return c;
+      }
+      
+      if (appId === 'neural') {
+        const c = createEl('div', { className: 'neural-core-content' });
+        const avatar = createEl('div', { className: 'neural-avatar' });
+        avatar.appendChild(createEl('div', { className: 'neural-avatar-ring' }));
+        avatar.appendChild(createEl('div', { className: 'neural-avatar-ring' }));
+        avatar.appendChild(createEl('div', { className: 'neural-avatar-ring' }));
+        avatar.appendChild(createEl('div', { className: 'neural-avatar-core' }));
+        const status = createEl('div', { className: 'neural-status' });
+        status.appendChild(createEl('div', { className: 'neural-status-title', textContent: 'NEXUS AI' }));
+        status.appendChild(createEl('div', { className: 'neural-status-subtitle', textContent: 'Sentient Core Active' }));
+        const metrics = createEl('div', { className: 'neural-metrics' });
+        const m1 = createEl('div', { className: 'neural-metric' });
+        m1.appendChild(createEl('div', { className: 'neural-metric-value', textContent: `${state.aiConsciousness.toFixed(1)}%` }));
+        m1.appendChild(createEl('div', { className: 'neural-metric-label', textContent: 'Consciousness' }));
+        const m2 = createEl('div', { className: 'neural-metric' });
+        m2.appendChild(createEl('div', { className: 'neural-metric-value', textContent: '1.42' }));
+        m2.appendChild(createEl('div', { className: 'neural-metric-label', textContent: 'Learning/s' }));
+        metrics.appendChild(m1); metrics.appendChild(m2);
+        status.appendChild(metrics);
+        c.appendChild(avatar);
+        c.appendChild(status);
+        return c;
+      }
+      
+      if (appId === 'dev-lab') {
+        let code = `<!DOCTYPE html>\n<html>\n<head>\n  <title>My App</title>\n  <style>\n    body { font-family: sans-serif; background: #1a1a2e; color: #eee; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }\n    h1 { color: #00f0ff; }\n  </style>\n</head>\n<body>\n  <h1>Hello, NEXUS!</h1>\n</body>\n</html>`;
+        const c = createEl('div', { className: 'dev-lab-content' });
+        const toolbar = createEl('div', { className: 'dev-toolbar' });
+        toolbar.appendChild(createEl('button', { className: 'dev-btn run-btn', textContent: '▶ Run' }));
+        toolbar.appendChild(createEl('button', { className: 'dev-btn ai-btn', textContent: 'AI Fix' }));
+        toolbar.appendChild(createEl('button', { className: 'dev-btn ai-btn', textContent: 'AI Improve' }));
+        const editor = createEl('div', { className: 'editor-container' });
+        const textarea = createEl('textarea', { className: 'code-editor' });
+        textarea.value = code;
+        const preview = createEl('div', { className: 'preview-panel' });
+        const iframe = createEl('iframe', { className: 'preview-frame' });
+        preview.appendChild(iframe);
+        editor.appendChild(textarea);
+        editor.appendChild(preview);
+        c.appendChild(toolbar);
+        c.appendChild(editor);
+        
+        setTimeout(() => {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          doc.open(); doc.write(code); doc.close();
+        }, 100);
+        
+        return c;
+      }
+      
+      if (appId === 'art-studio') {
+        let prompt = '';
+        let images = [];
+        let loading = false;
+        const c = createEl('div', { className: 'art-studio-content' });
+        const main = createEl('div', { className: 'art-main' });
+        const gallery = createEl('div', { className: 'art-gallery', innerHTML: '<div class="art-image-card" style="display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px;">Generated images will appear here</div>' });
+        const promptArea = createEl('div', { className: 'art-prompt-area' });
+        const input = createEl('input', { className: 'art-prompt-input', placeholder: 'Describe the image you want to create...' });
+        input.oninput = (e) => { prompt = e.target.value; };
+        const btn = createEl('button', { className: 'art-generate-btn', textContent: 'Generate Image' });
+        
+        async function gen() {
+          if (!prompt.trim() || loading) return;
+          loading = true;
+          btn.textContent = 'Generating...';
+          btn.disabled = true;
+          const result = await generateImage(prompt);
+          loading = false;
+          btn.textContent = 'Generate Image';
+          btn.disabled = false;
+          if (result.success) {
+            images.unshift(result.url);
+            gallery.innerHTML = '';
+            images.forEach(img => {
+              const card = createEl('div', { className: 'art-image-card' });
+              card.appendChild(createEl('img', { src: img, alt: 'Generated' }));
+              gallery.appendChild(card);
+            });
+            showNotification('Image generated!');
+          } else showNotification(`Error: ${result.error}`);
+        }
+        btn.onclick = gen;
+        input.onkeydown = (e) => { if (e.key === 'Enter') gen(); };
+        promptArea.appendChild(input);
+        promptArea.appendChild(btn);
+        main.appendChild(gallery);
+        main.appendChild(promptArea);
+        c.appendChild(main);
+        return c;
+      }
+      
+      if (appId === 'conference') {
+        const c = createEl('div', { className: 'conference-content' });
+        const grid = createEl('div', { className: 'video-grid' });
+        const local = createEl('div', { className: 'video-tile local' });
+        local.appendChild(createEl('div', { className: 'video-placeholder', textContent: 'Y' }));
+        local.appendChild(createEl('span', { className: 'video-name', textContent: 'You' }));
+        grid.appendChild(local);
+        [1, 2, 3].forEach(i => {
+          const tile = createEl('div', { className: 'video-tile' });
+          tile.appendChild(createEl('div', { className: 'video-placeholder', textContent: `P${i}` }));
+          tile.appendChild(createEl('span', { className: 'video-name', textContent: `Participant ${i}` }));
+          grid.appendChild(tile);
+        });
+        const controls = createEl('div', { className: 'conference-controls' });
+        controls.appendChild(createEl('button', { className: 'conf-btn mute', textContent: '🎤' }));
+        controls.appendChild(createEl('button', { className: 'conf-btn video-btn', textContent: '📹' }));
+        controls.appendChild(createEl('button', { className: 'conf-btn share', textContent: '🖥' }));
+        controls.appendChild(createEl('button', { className: 'conf-btn end', textContent: '📞' }));
+        c.appendChild(grid);
+        c.appendChild(controls);
+        return c;
+      }
+      
+      if (appId === 'admin') {
+        const c = createEl('div', { className: 'admin-content' });
+        c.appendChild(createEl('div', { className: 'admin-header' }));
+        c.querySelector('.admin-header').appendChild(createEl('span', { className: 'admin-title', textContent: 'User Management' }));
+        const stats = createEl('div', { className: 'admin-stats' });
+        stats.innerHTML = `
+          <div class="admin-stat"><div class="admin-stat-value">${USERS_DB.length}</div><div class="admin-stat-label">Total Users</div></div>
+          <div class="admin-stat"><div class="admin-stat-value">${USERS_DB.filter(u => u.premium).length}</div><div class="admin-stat-label">Premium</div></div>
+          <div class="admin-stat"><div class="admin-stat-value">1</div><div class="admin-stat-label">Active Now</div></div>
+        `;
+        const table = createEl('table', { className: 'admin-users-table' });
+        table.innerHTML = `<thead><tr><th>User</th><th>Role</th><th>Status</th></tr></thead><tbody>${USERS_DB.map(u => `<tr><td>${u.username}</td><td>${u.role}</td><td><span class="admin-badge ${u.premium ? 'premium' : 'guest'}">${u.premium ? 'Premium' : 'Guest'}</span></td></tr>`).join('')}</tbody>`;
+        c.appendChild(stats);
+        c.appendChild(table);
+        return c;
+      }
+      
+      return createEl('div', { style: 'padding:20px', textContent: 'Unknown App' });
+    }
+
+    // Render
+    function render() {
+      const root = $('#nexus-root');
+      if (!root) return;
+      
+      if (state.appPhase === 'boot' || state.appPhase === 'login') {
+        root.innerHTML = `
+          <div class="boot-screen ${state.appPhase === 'login' ? 'fade-out' : ''}">
+            <div class="boot-logo">NEXUS<span>.</span>OS</div>
+            <div class="boot-progress"><div class="boot-progress-fill"></div></div>
+            <div class="boot-text">Initializing Neural Kernel...</div>
+          </div>
+          <div class="login-overlay ${state.appPhase === 'login' ? 'visible' : ''}">
+            <div class="login-modal">
+              <div class="login-logo">NEXUS<span>.</span>OS</div>
+              <form id="login-form">
+                <div class="login-form">
+                  <input type="text" class="login-input" id="login-username" placeholder="Username" required>
+                  <input type="password" class="login-input" id="login-password" placeholder="Password" required>
+                  <button type="submit" class="login-submit">Access System</button>
+                </div>
+              </form>
+              <div class="login-divider">or continue as</div>
+              <button class="login-guest" id="guest-btn">Guest User</button>
+              <p style="margin-top:15px;font-size:11px;color:var(--text-dim);text-align:center">Demo credentials:<br>admin / admin123 | nexus / nexus123</p>
+            </div>
+          </div>
+        `;
+        
+        setTimeout(() => {
+          const form = $('#login-form');
+          const guestBtn = $('#guest-btn');
+          if (form) form.addEventListener('submit', (e) => { e.preventDefault(); handleLogin($('#login-username').value, $('#login-password').value); });
+          if (guestBtn) guestBtn.addEventListener('click', handleGuestLogin);
+        }, 10);
+        return;
+      }
+      
+      // Desktop
+      root.innerHTML = '';
+      const desktop = createEl('div', { className: 'desktop', onContextMenu: (e) => { e.preventDefault(); state.contextMenu = { x: e.clientX, y: e.clientY }; render(); } });
+      desktop.appendChild(createEl('canvas', { id: 'neural-canvas' }));
+      
+      const ambient = createEl('div', { className: 'ambient-layer' });
+      ambient.appendChild(createEl('div', { className: 'glow-orb cyan' }));
+      ambient.appendChild(createEl('div', { className: 'glow-orb magenta' }));
+      ambient.appendChild(createEl('div', { className: 'glow-orb violet' }));
+      desktop.appendChild(ambient);
+      desktop.appendChild(createEl('div', { className: 'grid-overlay' }));
+      desktop.appendChild(createEl('div', { className: 'scan-line' }));
+      
+      const iconsGrid = createEl('div', { className: 'icons-grid' });
+      const icons = [
+        { id: 'ai-chat', label: 'AI Chat', icon: '💬' }, { id: 'conference', label: 'Conference', icon: '👥', premium: true },
+        { id: 'dev-lab', label: 'Dev Lab', icon: '💻' }, { id: 'art-studio', label: 'Art Studio', icon: '🎨', premium: true },
+        { id: 'game-builder', label: 'Games', icon: '🎮' }, { id: 'radio', label: 'Radio', icon: '📻' },
+        { id: 'terminal', label: 'Terminal', icon: '⌨️' }, { id: 'monitor', label: 'System', icon: '📊' },
+        { id: 'neural', label: 'Neural', icon: '🧠' }, { id: 'settings', label: 'Settings', icon: '⚙️' },
+      ];
+      const isPremium = state.currentUser?.premium || state.currentUser?.role === 'admin';
+      icons.forEach(icon => {
+        const d = createEl('div', { className: `desktop-icon ${icon.premium && !isPremium ? 'premium' : ''}`, onDoubleClick: () => openWindow(icon.id) });
+        d.appendChild(createEl('div', { className: 'icon-emoji', textContent: icon.icon }));
+        d.appendChild(createEl('span', { textContent: icon.label }));
+        iconsGrid.appendChild(d);
+      });
+      desktop.appendChild(iconsGrid);
+      
+      // User menu
+      const userMenu = createEl('div', { className: 'user-menu' });
+      const userBtn = createEl('div', { className: 'user-btn', onClick: (e) => { e.stopPropagation(); state.showDropdown = !state.showDropdown; render(); } });
+      userBtn.appendChild(createEl('div', { className: 'user-avatar', textContent: state.currentUser?.username.charAt(0).toUpperCase() }));
+      const userInfo = createEl('div', { className: 'user-info' });
+      userInfo.appendChild(createEl('div', { className: 'user-name', textContent: state.currentUser?.username }));
+      userInfo.appendChild(createEl('div', { className: 'user-role', textContent: state.currentUser?.role }));
+      userBtn.appendChild(userInfo);
+      userMenu.appendChild(userBtn);
+      
+      if (state.showDropdown) {
+        const dropdown = createEl('div', { className: 'user-dropdown visible' });
+        if (state.currentUser?.role === 'admin') dropdown.appendChild(createEl('div', { className: 'user-dropdown-item', textContent: '🔐 Admin Panel', onClick: () => { state.showDropdown = false; openWindow('admin'); } }));
+        dropdown.appendChild(createEl('div', { className: 'user-dropdown-item', textContent: '⚙️ Settings', onClick: () => { state.showDropdown = false; openWindow('settings'); } }));
+        dropdown.appendChild(createEl('div', { className: 'user-dropdown-item logout', textContent: '🚪 Logout', onClick: handleLogout }));
+        userMenu.appendChild(dropdown);
+      }
+      desktop.appendChild(userMenu);
+      
+      // Clock
+      const clock = createEl('div', { className: 'clock-widget' });
+      clock.appendChild(createEl('div', { className: 'clock-time', textContent: state.time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) }));
+      clock.appendChild(createEl('div', { className: 'clock-date', textContent: state.time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) }));
+      desktop.appendChild(clock);
+      
+      // Windows
+      state.windows.forEach(win => {
+        if (win.minimized) return;
+        const w = createEl('div', {
+          className: `window ${state.activeWindow === win.id ? 'focused' : ''}`,
+          style: { left: win.maximized ? '0' : `${win.position.x}px`, top: win.maximized ? '0' : `${win.position.y}px`, width: win.maximized ? '100%' : win.size.width, height: win.maximized ? 'calc(100% - 70px)' : win.size.height, zIndex: win.zIndex },
+          onMouseDown: () => focusWindow(win.id),
+        });
+        const header = createEl('div', { className: 'window-header', onMouseDown: (e) => startDrag(e, win.id) });
+        const title = createEl('div', { className: 'window-title' });
+        title.appendChild(createEl('span', { textContent: windowTitles[win.appId]?.icon || '📁' }));
+        title.appendChild(createEl('span', { textContent: windowTitles[win.appId]?.title || win.appId }));
+        const controls = createEl('div', { className: 'window-controls' });
+        controls.appendChild(createEl('button', { className: 'window-btn close', onClick: () => closeWindow(win.id) }));
+        controls.appendChild(createEl('button', { className: 'window-btn minimize', onClick: () => minimizeWindow(win.id) }));
+        controls.appendChild(createEl('button', { className: 'window-btn maximize', onClick: () => toggleMaximize(win.id) }));
+        header.appendChild(title);
+        header.appendChild(controls);
+        w.appendChild(header);
+        const content = createEl('div', { className: 'window-content' });
+        content.appendChild(getWindowContent(win.appId, win.id));
+        w.appendChild(content);
+        desktop.appendChild(w);
+      });
+      
+      // Taskbar
+      const taskbar = createEl('div', { className: 'taskbar' });
+      icons.slice(0, 6).forEach(icon => {
+        const isActive = state.windows.some(w => w.appId === icon.id && !w.minimized);
+        const item = createEl('div', {
+          className: `taskbar-item ${isActive ? 'active' : ''}`,
+          textContent: icon.icon,
+          onClick: () => {
+            const existing = state.windows.find(w => w.appId === icon.id);
+            if (existing) focusWindow(existing.id);
+            else openWindow(icon.id);
+          },
+        });
+        taskbar.appendChild(item);
+      });
+      taskbar.appendChild(createEl('div', { className: 'taskbar-divider' }));
+      const tray = createEl('div', { className: 'system-tray' });
+      tray.innerHTML = `<div class="tray-item"><span class="value">${Math.round(state.cpuUsage)}</span><span class="unit">% CPU</span></div><div class="tray-item"><span class="value">${state.aiConsciousness.toFixed(1)}</span><span class="unit">% AI</span></div>`;
+      taskbar.appendChild(tray);
+      desktop.appendChild(taskbar);
+      
+      // Premium modal
+      if (state.showPremium) {
+        const overlay = createEl('div', { className: 'premium-overlay' });
+        overlay.innerHTML = `
+          <div class="premium-modal">
+            <button class="premium-close" onclick="state.showPremium=false;render();">×</button>
+            <span class="premium-badge">PRO</span>
+            <div class="premium-title">Upgrade to NEXUS Pro</div>
+            <div class="premium-desc">Unlock the full potential of NEXUS OS with premium features.</div>
+            <div class="premium-features">
+              <div class="premium-feature">✨ AI Art Studio - Generate stunning images</div>
+              <div class="premium-feature">👥 Video Conference - Connect with others</div>
+              <div class="premium-feature">🚀 Priority AI responses</div>
+            </div>
+            <div class="premium-price"><div class="premium-amount">$9.99</div><div class="premium-period">per month</div></div>
+            <button class="premium-btn" onclick="state.showPremium=false;render();">Upgrade Now</button>
+          </div>
+        `;
+        desktop.appendChild(overlay);
+      }
+      
+      // Notification
+      if (state.notification) {
+        const notif = createEl('div', { className: 'notification visible' });
+        notif.appendChild(createEl('div', { className: 'notification-body', textContent: state.notification }));
+        desktop.appendChild(notif);
+      }
+      
+      // Context menu
+      if (state.contextMenu) {
+        const menu = createEl('div', { className: 'context-menu visible', style: { left: `${state.contextMenu.x}px`, top: `${state.contextMenu.y}px` } });
+        menu.innerHTML = `
+          <div class="context-menu-item" onclick="state.contextMenu=null;openWindow('settings');render();">⚙️ Settings</div>
+          <div class="context-menu-item" onclick="state.contextMenu=null;openWindow('terminal');render();">⌨️ Open Terminal</div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" onclick="state.contextMenu=null;render();">🔄 Refresh Desktop</div>
+        `;
+        desktop.appendChild(menu);
+        document.addEventListener('click', () => { state.contextMenu = null; render(); }, { once: true });
+      }
+      
+      root.appendChild(desktop);
+      setTimeout(() => initNeuralCanvas(), 10);
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => { render(); startBoot(); startStatsUpdate(); });
+    
+    // Expose for onclick handlers
+    window.state = state;
+    window.openWindow = openWindow;
+    window.render = render;
+  </script>
+</body>
+</html>
